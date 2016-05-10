@@ -1,8 +1,8 @@
 1. Parse IMDb for horror (and any genre followed by -horror) titles and movie_ids
 2. Populate db with this data
 
-3. Given a zipcode, get theatre info
-4. Populate db with theatre info
+3. Given a zipcode, get theatre info from google movie showtimes
+4. Populate db with theatre info, weighting indie films to be higher in list
 
 5. Given a title, get google movie showtimes
 
