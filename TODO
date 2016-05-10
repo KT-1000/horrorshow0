@@ -1,7 +1,15 @@
-Workflow diagram
+1. Parse IMDb for horror (and any genre followed by -horror) titles and movie_ids
+2. Populate db with this data
 
-Database schema
+3. Given a zipcode, get theatre info
+4. Populate db with theatre info
 
-Proof of concept - showtime from one theater website, get  movie info from imdb
+5. Given a title, get google movie showtimes
 
-Finalize scope and stack for first sprint to MVP
+
+Movie ---3 Showing 3--- Theater
+movie_id   showing_id   theater_id
+title      datetime     name
+url         movie_id    location
+release_date theater_id
+synopsis    
