@@ -5,26 +5,49 @@ db = SQLAlchemy()
 
 class Movie(db.Model):
     """ Movie record from IMDb. """
+    __tablename__ = "movie"
+
     imdb_id = db.Column(db.Integer, primary_key=True, index=True)
-    title = db.Column(db.String(256))
-    image_url = db.Column(db.String(256), nullable=True)
-    rating = db.Column(db.String(8), nullable=True)
+    title = db.Column(db.String(250))
+    rating = db.Column(db.String(10), nullable=True)
+    release_date = db.Column(db.DateTime, nullable=True)
     runtime = db.Column(db.Integer, nullable=True)
-    description = db.Column(db.String(5000), nullable=True)
+    genre = db.Column(db.String(250))
+    plot = db.Column(db.String(20000), nullable=True)
+    language = db.Column(db.String(50), nullable=True)
+    poster_url = db.Column(db.String(500), nullable=True)
+    detail_url = db.Column(db.String(250))
+
+    def __repr__(self):
+        """ Provide more informative object info. """
+        return "<imdb_id: %d title: %s>" % (self.imdb_id, self.title)
 
 
 class Showing(db.Model):
     """ A showing occurs in a theater for a movie. """
+    __tablename__ = "showing"
+
     showing_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     time = db.Column(db.DateTime)
     movie_id = db.Column(db.Integer, db.ForeignKey('movie.imdb_id'))
     theater_id = db.Column(db.Integer, db.ForeignKey('theater.theater_id'))
 
+    def __repr__(self):
+        """ Provide more informative object info. """
+        return "<time: %s>" % (self.time)
+
 
 class Theater(db.Model):
-    """ Theater information from Google Movies Showtimes. """
+    """ Theater information. """
+    __tablename__ = "theater"
+
     theater_id = db.Column(db.Integer, primary_key=True, index=True)
-    location = db.Column(db.String(128))
+    name = db.Column(db.String(150))
+    location = db.Column(db.String(250))
+
+    def __repr__(self):
+        """ Provide more informative object info. """
+        return "<theater: %d>" % (self.name)
 
 
 # Helper functions

@@ -1,10 +1,12 @@
-1. Parse IMDb for horror (and any genre followed by -horror) titles and movie_ids
-2. Populate db with this data
+1. Get Movie data:
+    a. IDs - Parse IMDb for horror (and any genre followed by -horror) movie_ids
+       (Have one page, must use URL pattern to get others)
+    b. Movie details - use imdbpie to get movie info by imdb_id
 
-3. Given a zipcode, get theatre info from google movie showtimes
-4. Populate db with theatre info, weighting indie films to be higher in list
+2. Given a zipcode, get theatre info from google movie showtimes
+    Populate db with theatre info, weighting indie films to be higher in list
 
-5. Given a title, get google movie showtimes
+3. Given a title, get google movie showtimes
 
 
 Movie ---3 Showing 3--- Theater

@@ -3,14 +3,15 @@ from bs4 import BeautifulSoup
 import urllib2
 
 
-def get_horror_movies():
-    imdb = Imdb()
-    title = imdb.get_title_by_id("tt4062536")
-    print title.title
-
-
-def scrape_imdb(movie_file):
-    ''' Get movie information from IMDb to seed horrorshow database. '''
+def parse_imdb(movie_file):
+    ''' Get movie information from IMDb to seed horrorshow database.
+        Create list of IMDb URLs representing the results for horror genre search
+        on IMDb.
+        For each URL in the list, open that URL
+        Make it into soup
+        From each link containing the search result's imdb_id, get the imdb_id
+        and write it to the movies.txt file.
+    '''
     # Get html from URL
     html = urllib2.urlopen("http://www.imdb.com/search/title?genres=horror&sort=moviemeter,asc&title_type=feature")
     soup = BeautifulSoup(html, 'html.parser')
@@ -23,4 +24,13 @@ def scrape_imdb(movie_file):
                 imdb_id = (link['href'].split('/'))[2]
                 cur_file.write(imdb_id + '\n')
 
-scrape_imdb("movies.txt")
+
+def get_horror_movies(imdb_id):
+    """ For each imdb_id in the movies.txt file, get the movie info using imdbpie
+        Write to movie_entry.txt file, which will be read to populate db.
+    """
+    imdb = Imdb()
+    title = imdb.get_title_by_id(imdb_id)
+    print title.title
+
+parse_imdb("movies.txt")
