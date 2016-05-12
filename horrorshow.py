@@ -4,10 +4,9 @@ app = Flask(__name__)
 
 
 @app.route('/')
-def get_landing():
+def show_main():
 
     return render_template("horror_show.html")
-
 
 if __name__ == '__main__':
     app.run()

@@ -1,6 +1,6 @@
-from imdbpie import Imdb
 from bs4 import BeautifulSoup
-import urllib2
+from urllib2 import urlopen
+import json
 
 
 def get_movie_ids(id_file):
@@ -17,10 +17,10 @@ def get_movie_ids(id_file):
     imdb_ids = []
 
     # Get html from URL, format 'http://www.imdb.com/search/title?genres=horror&sort=moviemeter,asc&start=51&title_type=feature'
-    html = urllib2.urlopen("http://www.imdb.com/search/title?genres=horror&sort=moviemeter,asc&title_type=feature")
+    html = urlopen("http://www.imdb.com/search/title?genres=horror&sort=moviemeter,asc&title_type=feature")
     soup = BeautifulSoup(html, 'html.parser')
 
-    with open("movie_ids.txt", 'w') as cur_file:
+    with open(id_file, 'w') as cur_file:
         for link in soup.find_all('a', href=True):
             # get only links containing imdb id of result movies
             if '/title/tt' in link['href'] and 'vote' not in link['href']:
@@ -28,20 +28,49 @@ def get_movie_ids(id_file):
                 imdb_id = (link['href'].split('/'))[2]
                 # append imdb id number to imdb_ids list, which will be returned
                 imdb_ids.append(imdb_id)
-                # write imdb id to file so we can read the file as an alternative to scraping IMDb directly in the future.
-                cur_file.write(imdb_id + '\n')
-    return imdb_ids
 
-
-def get_movie_info(imdb_ids, out_file):
-    """ For each imdb_id in the movies.txt file, get the movie info using imdbpie
-        Write to movie_entry.txt file, which will be read to populate db.
-    """
-    # connect to IMDb using imdbpie
-    imdb = Imdb()
-    with open(out_file, 'w') as movies_file:
+        # only want one of each id, so make our array a set
+        imdb_ids = set(imdb_ids)
+        # write imdb id to file so we can read the file as an alternative to scraping IMDb directly in the future.
         for imdb_id in imdb_ids:
-            title_obj = imdb.get_title_by_id(imdb_id)
-            title = title_obj.title
-            line = imdb_id + '|' + title + '\n'
-            movies_file.write(line)
+            cur_file.write(imdb_id + '\n')
+
+
+def get_movie_info(in_file, out_file):
+    """ For each imdb_id in the imdb_ids list, query OMDb to get JSON object containing
+        information about that movie and write to out_file.
+    """
+    # open up the ouput file to hold movie data
+    with open(out_file, 'w') as movies_file:
+        with open(in_file, 'r') as ids_file:
+            for imdb_id in ids_file:
+                # create URI which will return JSON
+                # http://www.omdbapi.com/?i=tt1974419&plot=short&r=json
+                url = "http://www.omdbapi.com/?i=" + imdb_id
+                response = urlopen(url)
+                data = json.loads(response.read())
+                movie_id = data['imdbID']
+                title = data['Title']
+                year = data['Year']
+                rated = data["Rated"]
+                release_date = data['Released']
+                runtime = data['Runtime']
+                genre = data['Genre']
+                plot = data['Plot']
+                language = data['Language']
+                country = data['Country']
+                poster_url = data['Poster']
+
+                print_line = movie_id + '|' \
+                             + title + '|' \
+                             + year + '|' \
+                             + rated + '|' \
+                             + release_date + '|' \
+                             + runtime + '|' \
+                             + genre + '|' \
+                             + plot + '|' \
+                             + language + '|' \
+                             + country + '|' \
+                             + poster_url
+
+                movies_file.write(print_line + '\n')
