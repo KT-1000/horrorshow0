@@ -1,6 +1,8 @@
 from bs4 import BeautifulSoup
 from urllib2 import urlopen
 import json
+import datetime
+from models import db, connect_to_db, Movie, Collection, Association, Showing, Theater
 
 
 def get_movie_ids(id_file):
@@ -46,8 +48,9 @@ def get_movie_info(in_file, out_file):
             for imdb_id in ids_file:
                 # create URI which will return JSON
                 # http://www.omdbapi.com/?i=tt1974419&plot=short&r=json
-                url = "http://www.omdbapi.com/?i=" + imdb_id
-                response = urlopen(url)
+                omdb_url = "http://www.omdbapi.com/?i=" + imdb_id
+                imdb_url = "http://www.imdb.com/title/" + imdb_id.strip()
+                response = urlopen(omdb_url)
                 data = json.loads(response.read())
                 movie_id = data['imdbID']
                 title = data['Title']
@@ -71,6 +74,41 @@ def get_movie_info(in_file, out_file):
                              + plot + '|' \
                              + language + '|' \
                              + country + '|' \
-                             + poster_url
+                             + poster_url + '|' \
+                             + imdb_url + '|' \
+                             + omdb_url
 
-                movies_file.write(print_line + '\n')
+                movies_file.write(print_line)
+
+
+def load_movies(in_file):
+    """ Make each row of movie_info.txt into a new movie record in horrorshow db. """
+    for row in open(in_file, 'r'):
+        row = row.strip()
+        movie_id, title, year, rated, release_date, runtime, genre, plot, language, country, poster_url, imdb_url, omdb_url = row.split('|')
+        release_date = datetime.datetime.strptime(release_date, '%d %b %Y')
+
+        movie = Movie(movie_id=movie_id,
+                      title=title,
+                      year=year,
+                      rated=rated,
+                      release_date=release_date,
+                      runtime=runtime,
+                      genre=genre,
+                      plot=plot,
+                      language=language,
+                      country=country,
+                      poster_url=poster_url,
+                      imdb_url=imdb_url,
+                      omdb_url=omdb_url)
+
+        db.session.add(movie)
+
+    db.session.commit()
+
+if __name__ == "__main__":
+    # As a convenience, if we run this module interactively, it will leave
+    # you in a state of being able to work with the database directly.
+    from horrorshow import app
+    connect_to_db(app)
+    print "Connected to DB."
