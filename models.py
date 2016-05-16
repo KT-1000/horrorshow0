@@ -36,20 +36,20 @@ class Movie(db.Model):
     movie_id = db.Column(db.String(15), primary_key=True, index=True)
     title = db.Column(db.String(250))
     year = db.Column(db.Integer)
-    rated = db.Column(db.String(10), nullable=True)
-    release_date = db.Column(db.DateTime, nullable=True)
-    runtime = db.Column(db.String(10), nullable=True)
+    rated = db.Column(db.String(10))
+    release_date = db.Column(db.DateTime)
+    runtime = db.Column(db.String(10))
     genre = db.Column(db.String(100))
-    plot = db.Column(db.String(10000), nullable=True)
-    language = db.Column(db.String(50), nullable=True)
-    country = db.Column(db.String(50), nullable=True)
-    poster_url = db.Column(db.String(500), nullable=True)
+    plot = db.Column(db.String(10000))
+    language = db.Column(db.String(50))
+    country = db.Column(db.String(50))
+    poster_url = db.Column(db.String(500))
     imdb_url = db.Column(db.String(500))
     omdb_url = db.Column(db.String(500))
 
     def __repr__(self):
         """ Provide more informative object info. """
-        return "<%d : %s>" % (self.movie_id, self.title)
+        return "<%s : %s>" % (self.movie_id, self.title)
 
 
 class Showing(db.Model):
@@ -77,7 +77,7 @@ class Theater(db.Model):
 
     def __repr__(self):
         """ Provide more informative object info. """
-        return "<theater: %d>" % self.name
+        return "<theater: %s>" % self.name
 
 
 # Helper functions
@@ -92,6 +92,6 @@ def connect_to_db(app):
 if __name__ == "__main__":
     # As a convenience, if we run this module interactively, it will leave
     # you in a state of being able to work with the database directly.
-    from horrorshow import app
+    from server import app
     connect_to_db(app)
     print "Connected to DB."

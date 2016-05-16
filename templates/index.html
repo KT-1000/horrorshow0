@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h2>Horror Movies Near You</h2>
+        {% for movie in movies %}
+            <div>
+                <a href="{{ movie.imdb_url }}">
+                    <img class="img-responsive" src={{ movie.poster_url }}>
+                </a>
+                <h3>
+                    <a href="{{ movie.imdb_url }}">{{ movie.title }}</a>
+                </h3>
+                <p>{{ movie.plot }}</p>
+            </div>
+        {% endfor %}
+{% endblock %}
