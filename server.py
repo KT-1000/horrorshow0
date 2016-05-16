@@ -1,11 +1,12 @@
 from flask import Flask, render_template, redirect, request, flash, session
-from models import Movie, Collection, Association, Showing, Theater
-from jinja2 import StrictUndefined
+from models import connect_to_db, Movie
 
 app = Flask(__name__)
-
 # Required to use Flask sessions and the debug toolbar
 app.secret_key = "ChaosReigns"
+app.config['DEBUG'] = True
+# set up SQLAlchemy with app as context
+connect_to_db(app)
 
 
 @app.route('/')
